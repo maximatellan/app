@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Título</title>
+	<script type="text/javascript">
+		function showValueF(value){
+			document.getElementById("rangeF").innerHTML=value;
+			document.getElementById("F").value=value;
+		}
+		function showValueC(value){
+			document.getElementById("rangeC").innerHTML=value;
+			document.getElementById("C").value = value;
+		}
+		function actualizeMatrix(){
+			value = document.getElementById("inputMatrix").value;
+			document.getElementById("matrix").innerHTML = value;
+			document.getElementById("inputMatrix").value = "";
+		}
+	</script>
+<body>
+	<h1>Título</h1>	
+	<ul hidden>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+	<section class="row">
+		<div class="col-3"></div>	
+		<div class="col-6">
+			<section id="conteiner-general">
+				<h3>Sopa de Letras</h3>
+				<section id="container-game col-12" class="content">
+					<component class="numberSlider-component col-4">	
+						<input hidden id="F" name="numberF" type="number" maxlength="100" /><br>
+						<span id="rangeF">0</span><br>
+						<input id="sliderF" type="range" min="0" max="100" value="0" oninput="showValueF(this.value)"><br>
+						<label for="numerodefilas">Seleccione el numero de Filas</label>
+					</component>
+					<component class="numberSlider-component col-4">
+						<input hidden id="C" name="numberC" type="number" maxlength="100" /><br>
+						<span id="rangeC">0</span><br>
+						<input id="sliderC" type="range" min="0" max="100" value="0" oninput="showValueC(this.value)"><br>
+						<label for="numerodecolumnas">Seleccione el numero de Columnas</label>
+					</component>
+					<br><br>
+					<component class="lettersMatrix-component col-12">
+						<input id="inputMatrix" type="text" class="col-4" placeholder="Ingrese Sopa de Letras..." oninput="actualizeMatrix()">
+						<section id="displayMatrix" class="col-8">
+							<titulo>Sopa de letras: (Matriz)</titulo>
+							<span id="matrix"></span>
+						</section>
+					</component>
+				</section>
+			</section>
+		</div>
+		<div class="col-3"></div>
+	</section>
+	<br>
+	<a href="/">Index</a>
+</body>
+</html>
+	
