@@ -4,6 +4,9 @@ import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
 import config from '../../webpack.dev.config.js'
+import gameController from '../js/main/controller/gameController'
+import bodyParser from "webpack-body-parser";
+
 
 const app = express(),
             TARGET_DIR = __dirname,
@@ -16,6 +19,9 @@ app.use(webpackDevMiddleware(compiler, {
 
 app.use(webpackHotMiddleware(compiler))
 
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+
 app.get('*', (req, res, next) => {
   compiler.outputFileSystem.readFile(HTML_INDEX, (err, result) => {
   if (err) {
@@ -27,9 +33,9 @@ app.get('*', (req, res, next) => {
   })
 })
 
-function showValue(value){
-  document.getElementById("range").innerHTML=value;
-}
+
+app.use('/', gameController)
+
 const PORT = process.env.PORT || 8080
 
 app.listen(PORT, () => {

@@ -2,8 +2,13 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<title>Título</title>
+	<title>COR Sopa de Letras</title>
 	<script type="text/javascript">
+		var soup = "";
+		let FILAS = 0;
+		let COLUMNAS = 0;
+		let SOPA_DE_LETRAS = [];
+
 		function showValueF(value){
 			document.getElementById("rangeF").innerHTML=value;
 			document.getElementById("F").value=value;
@@ -12,53 +17,135 @@
 			document.getElementById("rangeC").innerHTML=value;
 			document.getElementById("C").value = value;
 		}
+		function fixNumbers(){
+			var items = document.querySelectorAll('input[type="range"]');
+			  for (var i = 0; i < items.length; i++) {
+			    items[i].disabled = true;
+			  }
+			  document.getElementById("fixNumbers").disabled = true;
+			  document.getElementById("inputMatrix").disabled = false;
+			FILAS = document.getElementById("sliderF").value;
+			COLUMNAS = document.getElementById("sliderC").value;
+		}
 		function actualizeMatrix(){
 			value = document.getElementById("inputMatrix").value;
-			document.getElementById("matrix").innerHTML = value;
+			document.getElementById("matrix").innerHTML += value.toUpperCase()
 			document.getElementById("inputMatrix").value = "";
+			addValueToMatrix(value);
+		}
+
+		function addValueToMatrix(value){
+			let MAXVALUE = FILAS*COLUMNAS;
+			if (soup.length<MAXVALUE) {soup = soup.concat(value.toUpperCase())}
+			else {populateMatrix(); document.getElementById("inputMatrix").disabled = true;}
+		}
+		function populateMatrix(){
+			//soup.toUpperCase()
+			let soupaux = soup.split("");
+			let matrix = document.getElementById("matrix")
+			matrix.innerHTML = ""
+			SOPA_DE_LETRAS = new Array(parseInt(FILAS));
+			 for (var f = 0; f < SOPA_DE_LETRAS.length; f++) {
+			 	SOPA_DE_LETRAS[f] = new Array(parseInt(COLUMNAS));
+			 	for (var c = 0; c < SOPA_DE_LETRAS[f].length;  c++) {
+						SOPA_DE_LETRAS[f][c] = soupaux[0];
+						matrix.innerHTML += "<span style=\"margin:0 5px 0 5px\">"+SOPA_DE_LETRAS[f][c]+"</span>";
+						soupaux.shift();
+				 }
+				 matrix.innerHTML +="<br/>"
+			}
+			resolveGamePOST()
 		}
 	</script>
+	<script>
+		//POST 
+		//resolveGame
+
+		var baseURL = location.origin
+
+		function getNewXHRObject(){
+		  var xhr
+		  if (window.XMLHttpRequest) {
+		      xhr = new XMLHttpRequest()// code for IE7+, Firefox, Chrome, Opera, Safari
+		  } else {
+		      xhr = new ActiveXObject("Microsoft.XMLHTTP"); // code for IE6, IE5
+		    }
+		  return xhr;
+		}
+
+		function resolveGamePOST(){
+		  var url = baseURL+"/resolveGame"
+		var params = "sopadeletras="+soup+"&filas="+FILAS+"&columnas="+COLUMNAS
+	    
+	    var xhr = getNewXHRObject()
+	    xhr.open("POST", url, true)
+	    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	   
+	    xhr.send(params)
+	   
+	    xhr.onreadystatechange = function() {
+	      if (xhr.readyState == XMLHttpRequest.DONE ) {
+	        if(xhr.status == 200){
+	          var content = xhr.getResponseHeader("Content-Type")
+	          if(content == "application/json; charset=utf-8"){
+	            var json = JSON.parse(xhr.responseText)
+	            if(json.success){
+	              alert("Respuestas: "+json.response)
+	              document.getElementById("respuestas").innerHTML += "  "+json.response
+	            }else if(!json.success){
+	              alert(json.response)
+	            }
+	          } 
+	        }
+	      }
+	    }
+	}
+	</script>	
 <body>
-	<h1>Título</h1>	
-	<ul hidden>
-		<li></li>
-		<li></li>
-		<li></li>
-		<li></li>
-	</ul>
-	<section class="row">
-		<div class="col-3"></div>	
+	<header id="logo" class="col-12">
+		<h1>COR Sopa de Letras</h1>
+	</header>
+	<section id="content" class="row">
+		<div class="conteiner-lateral col-3"></div>	
 		<div class="col-6">
 			<section id="conteiner-general">
-				<h3>Sopa de Letras</h3>
-				<section id="container-game col-12" class="content">
+				<section id="container-game" class="col-12">
 					<component class="numberSlider-component col-4">	
 						<input hidden id="F" name="numberF" type="number" maxlength="100" /><br>
-						<span id="rangeF">0</span><br>
-						<input id="sliderF" type="range" min="0" max="100" value="0" oninput="showValueF(this.value)"><br>
+						<span id="rangeF">1</span><br>
+						<input id="sliderF" type="range" min="1" max="100" value="1" oninput="showValueF(this.value)"><br>
 						<label for="numerodefilas">Seleccione el numero de Filas</label>
 					</component>
 					<component class="numberSlider-component col-4">
 						<input hidden id="C" name="numberC" type="number" maxlength="100" /><br>
-						<span id="rangeC">0</span><br>
-						<input id="sliderC" type="range" min="0" max="100" value="0" oninput="showValueC(this.value)"><br>
+						<span id="rangeC">1</span><br>
+						<input id="sliderC" type="range" min="1" max="100" value="1" oninput="showValueC(this.value)"><br>
 						<label for="numerodecolumnas">Seleccione el numero de Columnas</label>
+					</component>
+					<component class="col-4">
+						<input type="button" id="fixNumbers" value="Fijar Filas y Columnas" onclick="fixNumbers();">
 					</component>
 					<br><br>
 					<component class="lettersMatrix-component col-12">
-						<input id="inputMatrix" type="text" class="col-4" placeholder="Ingrese Sopa de Letras..." oninput="actualizeMatrix()">
+						<input disabled id="inputMatrix" type="text" class="col-4" placeholder="Ingrese Sopa de Letras..." oninput="actualizeMatrix()">
 						<section id="displayMatrix" class="col-8">
-							<titulo>Sopa de letras: (Matriz)</titulo>
-							<span id="matrix"></span>
+							<titulo>Sopa de letras:</titulo>
+							<br><br>
+							<div id="matrix"></div>
 						</section>
+					</component>
+					<br><br>
+					<component class="col-12">
+						<label id="respuestas" for="respuestas">Respuestas:</label>
 					</component>
 				</section>
 			</section>
 		</div>
-		<div class="col-3"></div>
+		<div class="conteiner-lateral col-3"></div>
 	</section>
-	<br>
-	<a href="/">Index</a>
+	<footer id="footer" class="col-12">
+		<a style="float:right;padding:10px;" href="/"><i>Maximilano Matellan</i></a>
+	</footer>
 </body>
 </html>
 	

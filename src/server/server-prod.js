@@ -1,5 +1,7 @@
 import path from 'path'
 import express from 'express'
+import gameController from '../js/main/controller/gameController'
+import bodyParser from "webpack-body-parser";
 
 const app = express(),
             DIST_DIR = __dirname,
@@ -8,9 +10,17 @@ const app = express(),
 
 app.use(express.static(DIST_DIR))
 
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+
+
 app.get('*', (req, res) => {
     res.sendFile(HTML_FILE)
 })
+
+
+app.use('/', gameController)
+
 
 const PORT = process.env.PORT || 443
 app.listen(PORT, () => {
